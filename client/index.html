@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Producto Nacional - Menú Digital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
+        
+        :root {
+            --primary-gold: #d4a574;
+            --primary-gold-light: #e6c08a;
+            --primary-gold-dark: #b8935f;
+            --text-dark: #1a1a1a;
+            --text-light: #6b7280;
+            --bg-cream: #faf8f5;
+            --bg-white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-cream);
+            color: var(--text-dark);
+        }
+
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .gradient-gold {
+            background: linear-gradient(135deg, var(--primary-gold) 0%, var(--primary-gold-light) 100%);
+        }
+
+        .text-gold {
+            color: var(--primary-gold);
+        }
+
+        .border-gold {
+            border-color: var(--primary-gold);
+        }
+
+        .shadow-custom {
+            box-shadow: 0 4px 20px rgba(212, 165, 116, 0.15);
+        }
+
+        .product-card {
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.25);
+        }
+
+        .carousel-container {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .carousel-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .cart-badge {
+            background: var(--primary-gold);
+            color: white;
+            font-size: 0.75rem;
+            min-width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        .loading-spinner {
+            border: 3px solid rgba(212, 165, 116, 0.3);
+            border-top: 3px solid var(--primary-gold);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal-backdrop {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .quantity-selector {
+            background: var(--bg-white);
+            border: 2px solid var(--primary-gold);
+            border-radius: 12px;
+        }
+
+        .btn-primary {
+            background: var(--primary-gold);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-gold-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-gold);
+            border: 2px solid var(--primary-gold);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-gold);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="category-nav sticky top-0 z-40 px-4 py-3">
+        <div class="flex items-center justify-between max-w-md mx-auto">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 gradient-gold rounded-full flex items-center justify-center">
+                    <i class="fas fa-utensils text-white text-sm"></i>
+                </div>
+                <div>
+                    <h1 class="font-display font-bold text-lg text-gray-800">Producto Nacional</h1>
+                    <p class="text-xs text-gray-500" id="table-info">Mesa <span id="table-number">--</span></p>
+                </div>
+            </div>
+            <button id="cart-btn" class="relative p-2 text-gold">
+                <i class="fas fa-shopping-cart text-xl"></i>
+                <span id="cart-count" class="cart-badge absolute -top-1 -right-1 rounded-full flex items-center justify-center hidden">0</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Navigation Categories -->
+    <nav class="px-4 py-2 bg-white border-b border-gray-100">
+        <div class="flex space-x-4 overflow-x-auto carousel-container" id="category-nav">
+            <!-- Categories will be populated by JavaScript -->
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="px-4 py-6 pb-24">
+        <!-- Loading State -->
+        <div id="loading" class="flex flex-col items-center justify-center py-12">
+            <div class="loading-spinner mb-4"></div>
+            <p class="text-gray-500">Cargando menú...</p>
+        </div>
+
+        <!-- Menu Content -->
+        <div id="menu-content" class="hidden">
+            <!-- Categories will be populated by JavaScript -->
+        </div>
+    </main>
+
+    <!-- Cart Floating Button -->
+    <div id="cart-floating" class="fixed bottom-6 right-6 z-30 hidden">
+        <button class="btn-primary w-14 h-14 rounded-full shadow-lg flex items-center justify-center">
+            <i class="fas fa-shopping-cart text-white"></i>
+            <span id="floating-cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+        </button>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="product-modal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-backdrop absolute inset-0" onclick="closeProductModal()"></div>
+        <div class="relative z-10 flex items-end justify-center min-h-screen">
+            <div class="bg-white rounded-t-3xl w-full max-w-md transform transition-transform duration-300 translate-y-full" id="modal-content">
+                <!-- Modal content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-backdrop absolute inset-0" onclick="closeCartModal()"></div>
+        <div class="relative z-10 flex items-end justify-center min-h-screen">
+            <div class="bg-white rounded-t-3xl w-full max-w-md transform transition-transform duration-300 translate-y-full" id="cart-modal-content">
+                <!-- Cart content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="payment-modal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-backdrop absolute inset-0" onclick="closePaymentModal()"></div>
+        <div class="relative z-10 flex items-end justify-center min-h-screen">
+            <div class="bg-white rounded-t-3xl w-full max-w-md transform transition-transform duration-300 translate-y-full" id="payment-modal-content">
+                <!-- Payment content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-backdrop absolute inset-0"></div>
+        <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-3xl w-full max-w-sm p-8 text-center shadow-2xl">
+                <div class="w-16 h-16 gradient-gold rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-white text-2xl"></i>
+                </div>
+                <h3 class="font-display font-bold text-xl mb-2">¡Orden Confirmada!</h3>
+                <p class="text-gray-600 mb-6">Tu orden ha sido enviada a cocina. Pronto recibirás tu pedido.</p>
+                <button onclick="closeSuccessModal()" class="btn-primary w-full py-3 rounded-xl font-semibold">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="menu.js"></script>
+</body>
+</html>

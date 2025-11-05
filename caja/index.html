@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caja - Producto Nacional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
+        
+        :root {
+            --primary-gold: #d4a574;
+            --primary-gold-light: #e6c08a;
+            --primary-gold-dark: #b8935f;
+            --text-dark: #1a1a1a;
+            --text-light: #6b7280;
+            --bg-cream: #faf8f5;
+            --bg-white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-cream);
+            color: var(--text-dark);
+        }
+
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .gradient-gold {
+            background: linear-gradient(135deg, var(--primary-gold) 0%, var(--primary-gold-light) 100%);
+        }
+
+        .text-gold {
+            color: var(--primary-gold);
+        }
+
+        .border-gold {
+            border-color: var(--primary-gold);
+        }
+
+        .order-card {
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.25);
+        }
+
+        .status-paid {
+            background: linear-gradient(135deg, #10b981, #34d399);
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+        }
+
+        .status-open {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+        }
+
+        .payment-card {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .payment-card:hover {
+            border-color: var(--primary-gold);
+            transform: translateY(-2px);
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, var(--primary-gold), var(--primary-gold-light));
+            color: white;
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .notification-badge {
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-100 px-6 py-4">
+        <div class="flex items-center justify-between max-w-7xl mx-auto">
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 gradient-gold rounded-full flex items-center justify-center">
+                    <i class="fas fa-cash-register text-white text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-display text-2xl font-bold text-gray-800">Caja</h1>
+                    <p class="text-sm text-gray-500">Gestión de pagos y cuentas</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-6">
+                <div class="text-right">
+                    <div class="text-sm text-gray-500">Ventas hoy</div>
+                    <div class="text-2xl font-bold text-gold" id="daily-sales">$0</div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-gray-500">Cuentas abiertas</div>
+                    <div class="text-2xl font-bold text-blue-600" id="open-tabs">0</div>
+                </div>
+                <div class="w-4 h-4 bg-red-500 rounded-full notification-badge hidden" id="new-payment-indicator"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Stats Cards -->
+    <div class="px-6 py-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="stats-card rounded-xl p-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-sm opacity-90">Total del día</div>
+                            <div class="text-2xl font-bold" id="total-revenue">$0</div>
+                        </div>
+                        <i class="fas fa-chart-line text-2xl opacity-75"></i>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-500 text-white rounded-xl p-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-sm opacity-90">Órdenes pagadas</div>
+                            <div class="text-2xl font-bold" id="paid-orders">0</div>
+                        </div>
+                        <i class="fas fa-credit-card text-2xl opacity-75"></i>
+                    </div>
+                </div>
+                
+                <div class="bg-green-500 text-white rounded-xl p-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-sm opacity-90">Efectivo</div>
+                            <div class="text-2xl font-bold" id="cash-payments">$0</div>
+                        </div>
+                        <i class="fas fa-money-bill text-2xl opacity-75"></i>
+                    </div>
+                </div>
+                
+                <div class="bg-purple-500 text-white rounded-xl p-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-sm opacity-90">Transferencias</div>
+                            <div class="text-2xl font-bold" id="transfer-payments">$0</div>
+                        </div>
+                        <i class="fas fa-exchange-alt text-2xl opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="px-6 py-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Active Orders -->
+                <div class="bg-white rounded-2xl p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="font-display text-xl font-bold text-gray-800">Órdenes Activas</h2>
+                        <div class="flex space-x-2">
+                            <button onclick="filterOrders('all')" 
+                                    class="filter-btn px-3 py-1 rounded-lg bg-amber-100 text-amber-800 text-sm font-medium">
+                                Todas
+                            </button>
+                            <button onclick="filterOrders('pending')" 
+                                    class="filter-btn px-3 py-1 rounded-lg bg-gray-100 text-gray-600 text-sm font-medium hover:bg-gray-200">
+                                Pendientes
+                            </button>
+                            <button onclick="filterOrders('paid')" 
+                                    class="filter-btn px-3 py-1 rounded-lg bg-gray-100 text-gray-600 text-sm font-medium hover:bg-gray-200">
+                                Pagadas
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4" id="orders-list">
+                        <!-- Orders will be populated by JavaScript -->
+                    </div>
+                    
+                    <div id="orders-empty" class="text-center py-8 hidden">
+                        <i class="fas fa-clipboard-list text-4xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-500">No hay órdenes activas</p>
+                    </div>
+                </div>
+                
+                <!-- Payment History -->
+                <div class="bg-white rounded-2xl p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="font-display text-xl font-bold text-gray-800">Pagos Recientes</h2>
+                        <button onclick="refreshPayments()" 
+                                class="text-gold hover:text-amber-600 transition-colors">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-3" id="payments-list">
+                        <!-- Payments will be populated by JavaScript -->
+                    </div>
+                    
+                    <div id="payments-empty" class="text-center py-8 hidden">
+                        <i class="fas fa-receipt text-4xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-500">No hay pagos registrados</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Order Detail Modal -->
+    <div id="order-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50" onclick="closeOrderModal()"></div>
+        <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-2xl w-full max-w-lg transform transition-transform duration-300 scale-95" id="modal-content">
+                <!-- Modal content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="payment-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50" onclick="closePaymentModal()"></div>
+        <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-2xl w-full max-w-md transform transition-transform duration-300 scale-95" id="payment-modal-content">
+                <!-- Payment content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="cashier.js"></script>
+</body>
+</html>

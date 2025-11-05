@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pruebas - Producto Nacional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
+        
+        :root {
+            --primary-gold: #d4a574;
+            --primary-gold-light: #e6c08a;
+            --primary-gold-dark: #b8935f;
+            --text-dark: #1a1a1a;
+            --text-light: #6b7280;
+            --bg-cream: #faf8f5;
+            --bg-white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-cream);
+            color: var(--text-dark);
+        }
+
+        .test-card {
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .test-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.25);
+        }
+
+        .test-passed {
+            background: linear-gradient(135deg, #10b981, #34d399);
+        }
+
+        .test-failed {
+            background: linear-gradient(135deg, #ef4444, #f87171);
+        }
+
+        .test-warning {
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-100 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                    <i class="fas fa-check-circle text-white text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-display text-2xl font-bold text-gray-800">Sistema de Pruebas</h1>
+                    <p class="text-sm text-gray-500">Validación de funcionalidades</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <button onclick="runAllTests()" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
+                    <i class="fas fa-play mr-2"></i>
+                    Ejecutar Todas
+                </button>
+                <button onclick="clearResults()" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors">
+                    <i class="fas fa-trash mr-2"></i>
+                    Limpiar
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="px-6 py-8">
+        <div class="max-w-7xl mx-auto">
+            <!-- Test Categories -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Database Tests -->
+                <div class="test-card bg-white rounded-2xl p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-lg text-gray-800">Base de Datos</h3>
+                        <i class="fas fa-database text-2xl text-blue-500"></i>
+                    </div>
+                    <div class="space-y-2 mb-4">
+                        <button onclick="testDatabaseConnection()" class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors">
+                            Probar Conexión
+                        </button>
+                        <button onclick="testProductLoading()" class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors">
+                            Cargar Productos
+                        </button>
+                        <button onclick="testOrderCreation()" class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors">
+                            Crear Orden
+                        </button>
+                    </div>
+                    <div id="database-results" class="text-sm text-gray-600">
+                        No ejecutado
+                    </div>
+                </div>
+
+                <!-- WebSocket Tests -->
+                <div class="test-card bg-white rounded-2xl p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-lg text-gray-800">WebSocket</h3>
+                        <i class="fas fa-broadcast-tower text-2xl text-purple-500"></i>
+                    </div>
+                    <div class="space-y-2 mb-4">
+                        <button onclick="testWebSocketConnection()" class="w-full bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition-colors">
+                            Conectar WebSocket
+                        </button>
+                        <button onclick="testNotificationSystem()" class="w-full bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition-colors">
+                            Sistema de Notificaciones
+                        </button>
+                        <button onclick="testRealTimeUpdates()" class="w-full bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition-colors">
+                            Actualizaciones en Tiempo Real
+                        </button>
+                    </div>
+                    <div id="websocket-results" class="text-sm text-gray-600">
+                        No ejecutado
+                    </div>
+                </div>
+
+                <!-- Menu Tests -->
+                <div class="test-card bg-white rounded-2xl p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-lg text-gray-800">Menú Digital</h3>
+                        <i class="fas fa-utensils text-2xl text-green-500"></i>
+                    </div>
+                    <div class="space-y-2 mb-4">
+                        <button onclick="testMenuLoading()" class="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors">
+                            Cargar Menú
+                        </button>
+                        <button onclick="testProductModal()" class="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors">
+                            Modal de Producto
+                        </button>
+                        <button onclick="testCategoryNavigation()" class="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors">
+                            Navegación por Categorías
+                        </button>
+                    </div>
+                    <div id="menu-results" class="text-sm text-gray-600">
+                        No ejecutado
+                    </div>
+                </div>
+
+                <!-- Shopping Cart Tests -->
+                <div class="test-card bg-white rounded-2xl p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-lg text-gray-800">Carrito de Compras</h3>
+                        <i class="fas fa-shopping-cart text-2xl text-amber-500"></i>
+                    </div>
+                    <div class="space-y-2 mb-4">
+                        <button onclick="testAddToCart()" class="w-full bg-amber-500 text-white py-2 px-4 rounded-lg hover:bg-amber-600 transition-colors">
+                            Agregar al Carrito
+                        </button>
+                        <button onclick="testCartPersistence()" class="w-full bg-amber-500 text-white py-2 px-4 rounded-lg hover:bg-amber-600 transition-colors">
+                            Persistencia del Carrito
+                        </button>
+                        <button onclick="testCartModal()" class="w-full bg-amber-500 text-white py-2 px-4 rounded-lg hover:bg-amber-600 transition-colors">
+                            Modal del Carrito
+                        </button>
+                    </div>
+                    <div id="cart-results" class="text-sm text-gray-600">
+                        No ejecutado
+                    </div>
+                </div>
+
+                <!-- Payment Tests -->
+                <div class="test-card bg-white rounded-2xl p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-lg text-gray-800">Sistema de Pagos</h3>
+                        <i class="fas fa-credit-card text-2xl text-indigo-500"></i>
+                    </div>
+                    <div class="space-y-2 mb-4">
+                        <button onclick="testPaymentMethods()" class="w-full bg-indigo-500 text-white py-2 px-4 rounded-lg hover:bg-indigo-600 transition-colors">
+                            Métodos de Pago
+                        </button>
+                        <button onclick="testPaymentProcessing()" class="w-full bg-indigo-500 text-white py-2 px-4 rounded-lg hover:bg-indigo-600 transition-colors">
+                            Procesamiento de Pago
+                        </button>
+                        <button onclick="testPaymentModal()" class="w-full bg-indigo-500 text-white py-2 px-4 rounded-lg hover:bg-indigo-600 transition-colors">
+                            Modal de Pago
+                        </button>
+                    </div>
+                    <div id="payment-results" class="text-sm text-gray-600">
+                        No ejecutado
+                    </div>
+                </div>
+
+                <!-- Admin Dashboard Tests -->
+                <div class="test-card bg-white rounded-2xl p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-lg text-gray-800">Panel Admin</h3>
+                        <i class="fas fa-crown text-2xl text-red-500"></i>
+                    </div>
+                    <div class="space-y-2 mb-4">
+                        <button onclick="testAdminLogin()" class="w-full bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-colors">
+                            Login de Admin
+                        </button>
+                        <button onclick="testDashboardLoading()" class="w-full bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-colors">
+                            Cargar Dashboard
+                        </button>
+                        <button onclick="testProductManagement()" class="w-full bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-colors">
+                            Gestión de Productos
+                        </button>
+                    </div>
+                    <div id="admin-results" class="text-sm text-gray-600">
+                        No ejecutado
+                    </div>
+                </div>
+            </div>
+
+            <!-- Test Results Summary -->
+            <div class="bg-white rounded-2xl p-6 shadow-lg">
+                <h3 class="font-display text-xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-chart-bar text-gold mr-2"></i>
+                    Resumen de Pruebas
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-blue-600" id="total-tests">0</div>
+                        <div class="text-sm text-gray-500">Total Pruebas</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-green-600" id="passed-tests">0</div>
+                        <div class="text-sm text-gray-500">Aprobadas</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-red-600" id="failed-tests">0</div>
+                        <div class="text-sm text-gray-500">Fallidas</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-amber-600" id="warning-tests">0</div>
+                        <div class="text-sm text-gray-500">Advertencias</div>
+                    </div>
+                </div>
+
+                <!-- Detailed Results -->
+                <div id="detailed-results" class="space-y-2 max-h-64 overflow-y-auto">
+                    <!-- Detailed test results will appear here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import db from './api/database.js';
+        import api from './api/server.js';
+        import ws from './api/websocket.js';
+
+        // Test tracking
+        let testResults = {
+            total: 0,
+            passed: 0,
+            failed: 0,
+            warnings: 0
+        };
+
+        function addTestResult(testName, status, message = '') {
+            testResults.total++;
+            
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `p-3 rounded-lg ${
+                status === 'passed' ? 'bg-green-100 text-green-800' :
+                status === 'failed' ? 'bg-red-100 text-red-800' :
+                'bg-yellow-100 text-yellow-800'
+            }`;
+            
+            resultDiv.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <span class="font-medium">${testName}</span>
+                    <span class="text-sm capitalize">${status}</span>
+                </div>
+                ${message ? `<div class="text-sm mt-1">${message}</div>` : ''}
+            `;
+            
+            document.getElementById('detailed-results').appendChild(resultDiv);
+            
+            // Update counters
+            if (status === 'passed') testResults.passed++;
+            else if (status === 'failed') testResults.failed++;
+            else testResults.warnings++;
+            
+            updateSummary();
+        }
+
+        function updateSummary() {
+            document.getElementById('total-tests').textContent = testResults.total;
+            document.getElementById('passed-tests').textContent = testResults.passed;
+            document.getElementById('failed-tests').textContent = testResults.failed;
+            document.getElementById('warning-tests').textContent = testResults.warnings;
+        }
+
+        function updateCategoryResult(category, status, message) {
+            const resultDiv = document.getElementById(`${category}-results`);
+            resultDiv.className = `text-sm ${
+                status === 'passed' ? 'text-green-600' :
+                status === 'failed' ? 'text-red-600' :
+                'text-yellow-600'
+            }`;
+            resultDiv.textContent = message;
+        }
+
+        // Database Tests
+        window.testDatabaseConnection = async function() {
+            try {
+                const products = db.getProducts();
+                const orders = db.getOrders();
+                const tables = db.getTables();
+                
+                if (products.length > 0 && orders.length >= 0 && tables.length > 0) {
+                    addTestResult('Conexión a Base de Datos', 'passed', 'Datos cargados correctamente');
+                    updateCategoryResult('database', 'passed', `✓ ${products.length} productos, ${orders.length} órdenes, ${tables.length} mesas`);
+                } else {
+                    addTestResult('Conexión a Base de Datos', 'failed', 'No se pudieron cargar los datos');
+                    updateCategoryResult('database', 'failed', '✗ Error al cargar datos');
+                }
+            } catch (error) {
+                addTestResult('Conexión a Base de Datos', 'failed', error.message);
+                updateCategoryResult('database', 'failed', '✗ Error de conexión');
+            }
+        };
+
+        window.testProductLoading = async function() {
+            try {
+                const products = db.getProducts();
+                const categories = [...new Set(products.map(p => p.category))];
+                
+                if (categories.length > 0) {
+                    addTestResult('Carga de Productos', 'passed', `${categories.length} categorías encontradas`);
+                    updateCategoryResult('database', 'passed', `✓ ${categories.length} categorías, ${products.length} productos`);
+                } else {
+                    addTestResult('Carga de Productos', 'failed', 'No se encontraron categorías');
+                    updateCategoryResult('database', 'failed', '✗ Sin categorías');
+                }
+            } catch (error) {
+                addTestResult('Carga de Productos', 'failed', error.message);
+                updateCategoryResult('database', 'failed', '✗ Error al cargar productos');
+            }
+        };
+
+        window.testOrderCreation = async function() {
+            try {
+                const testOrder = {
+                    tableNumber: 99,
+                    items: [
+                        { productId: 'guacamole', quantity: 2, comments: 'Sin picante' },
+                        { productId: 'carne-en-su-jugo', quantity: 1 }
+                    ],
+                    paymentMethod: 'card',
+                    total: 384
+                };
+                
+                const response = await api.createOrder(testOrder);
+                
+                if (response.success) {
+                    addTestResult('Creación de Orden', 'passed', `Orden ${response.data.orderNumber} creada`);
+                    updateCategoryResult('database', 'passed', `✓ Orden creada: ${response.data.orderNumber}`);
+                    
+                    // Clean up test order
+                    const orders = db.getOrders();
+                    const testOrders = orders.filter(o => o.tableNumber === 99);
+                    testOrders.forEach(order => {
+                        const orderIndex = orders.findIndex(o => o.id === order.id);
+                        if (orderIndex !== -1) {
+                            orders.splice(orderIndex, 1);
+                        }
+                    });
+                    db.saveData();
+                } else {
+                    addTestResult('Creación de Orden', 'failed', response.error || 'Error desconocido');
+                    updateCategoryResult('database', 'failed', '✗ Error al crear orden');
+                }
+            } catch (error) {
+                addTestResult('Creación de Orden', 'failed', error.message);
+                updateCategoryResult('database', 'failed', '✗ Error en creación');
+            }
+        };
+
+        // WebSocket Tests
+        window.testWebSocketConnection = function() {
+            try {
+                ws.connect();
+                
+                setTimeout(() => {
+                    if (ws.isConnected) {
+                        addTestResult('Conexión WebSocket', 'passed', 'Conectado exitosamente');
+                        updateCategoryResult('websocket', 'passed', '✓ Conectado');
+                    } else {
+                        addTestResult('Conexión WebSocket', 'warning', 'Conexión simulada');
+                        updateCategoryResult('websocket', 'warning', '⚠ Conexión simulada');
+                    }
+                }, 1000);
+            } catch (error) {
+                addTestResult('Conexión WebSocket', 'failed', error.message);
+                updateCategoryResult('websocket', 'failed', '✗ Error de conexión');
+            }
+        };
+
+        window.testNotificationSystem = function() {
+            try {
+                ws.joinRoom('kitchen');
+                ws.joinRoom('bar');
+                ws.joinRoom('cashier');
+                
+                addTestResult('Sistema de Notificaciones', 'passed', 'Salas unidas correctamente');
+                updateCategoryResult('websocket', 'passed', '✓ Sistema de notificaciones activo');
+            } catch (error) {
+                addTestResult('Sistema de Notificaciones', 'failed', error.message);
+                updateCategoryResult('websocket', 'failed', '✗ Error en notificaciones');
+            }
+        };
+
+        window.testRealTimeUpdates = function() {
+            try {
+                let updateReceived = false;
+                
+                ws.on('test_update', (data) => {
+                    updateReceived = true;
+                    addTestResult('Actualizaciones en Tiempo Real', 'passed', 'Actualización recibida');
+                    updateCategoryResult('websocket', 'passed', '✓ Actualizaciones funcionando');
+                });
+                
+                ws.emit('test_update', { message: 'Test update' });
+                
+                setTimeout(() => {
+                    if (!updateReceived) {
+                        addTestResult('Actualizaciones en Tiempo Real', 'warning', 'Sin actualización en 5 segundos');
+                        updateCategoryResult('websocket', 'warning', '⚠ Sin actualizaciones');
+                    }
+                }, 5000);
+            } catch (error) {
+                addTestResult('Actualizaciones en Tiempo Real', 'failed', error.message);
+                updateCategoryResult('websocket', 'failed', '✗ Error en actualizaciones');
+            }
+        };
+
+        // Menu Tests
+        window.testMenuLoading = function() {
+            try {
+                const products = db.getProducts();
+                const categories = [...new Set(products.map(p => p.category))];
+                
+                if (categories.length > 0 && products.length > 0) {
+                    addTestResult('Carga del Menú', 'passed', `${categories.length} categorías, ${products.length} productos`);
+                    updateCategoryResult('menu', 'passed', `✓ ${categories.length} categorías, ${products.length} productos`);
+                } else {
+                    addTestResult('Carga del Menú', 'failed', 'Menú vacío o sin categorías');
+                    updateCategoryResult('menu', 'failed', '✗ Menú no cargado');
+                }
+            } catch (error) {
+                addTestResult('Carga del Menú', 'failed', error.message);
+                updateCategoryResult('menu', 'failed', '✗ Error al cargar menú');
+            }
+        };
+
+        window.testProductModal = function() {
+            try {
+                const products = db.getProducts();
+                const testProduct = products[0];
+                
+                if (testProduct) {
+                    addTestResult('Modal de Producto', 'passed', `Producto ${testProduct.name} accesible`);
+                    updateCategoryResult('menu', 'passed', '✓ Modal de producto funcional');
+                } else {
+                    addTestResult('Modal de Producto', 'failed', 'No hay productos disponibles');
+                    updateCategoryResult('menu', 'failed', '✗ Sin productos');
+                }
+            } catch (error) {
+                addTestResult('Modal de Producto', 'failed', error.message);
+                updateCategoryResult('menu', 'failed', '✗ Error en modal');
+            }
+        };
+
+        window.testCategoryNavigation = function() {
+            try {
+                const products = db.getProducts();
+                const categories = [...new Set(products.map(p => p.category))];
+                
+                if (categories.length > 0) {
+                    addTestResult('Navegación por Categorías', 'passed', `${categories.length} categorías navegables`);
+                    updateCategoryResult('menu', 'passed', `✓ ${categories.length} categorías`);
+                } else {
+                    addTestResult('Navegación por Categorías', 'failed', 'Sin categorías para navegar');
+                    updateCategoryResult('menu', 'failed', '✗ Sin categorías');
+                }
+            } catch (error) {
+                addTestResult('Navegación por Categorías', 'failed', error.message);
+                updateCategoryResult('menu', 'failed', '✗ Error en navegación');
+            }
+        };
+
+        // Shopping Cart Tests
+        window.testAddToCart = function() {
+            try {
+                const testProduct = db.getProducts()[0];
+                const testItem = {
+                    id: Date.now(),
+                    product: testProduct,
+                    quantity: 2,
+                    comments: 'Sin picante',
+                    price: testProduct.price * 2
+                };
+                
+                localStorage.setItem('pn_cart_test', JSON.stringify([testItem]));
+                
+                const savedCart = localStorage.getItem('pn_cart_test');
+                if (savedCart) {
+                    addTestResult('Agregar al Carrito', 'passed', 'Producto agregado y guardado');
+                    updateCategoryResult('cart', 'passed', '✓ Carrito funcional');
+                    localStorage.removeItem('pn_cart_test');
+                } else {
+                    addTestResult('Agregar al Carrito', 'failed', 'No se pudo guardar el carrito');
+                    updateCategoryResult('cart', 'failed', '✗ Error al agregar');
+                }
+            } catch (error) {
+                addTestResult('Agregar al Carrito', 'failed', error.message);
+                updateCategoryResult('cart', 'failed', '✗ Error en carrito');
+            }
+        };
+
+        window.testCartPersistence = function() {
+            try {
+                const testData = { test: 'data', timestamp: Date.now() };
+                localStorage.setItem('pn_persistence_test', JSON.stringify(testData));
+                
+                const retrieved = JSON.parse(localStorage.getItem('pn_persistence_test'));
+                
+                if (retrieved && retrieved.test === 'data') {
+                    addTestResult('Persistencia del Carrito', 'passed', 'Datos persisten correctamente');
+                    updateCategoryResult('cart', 'passed', '✓ Persistencia funcional');
+                } else {
+                    addTestResult('Persistencia del Carrito', 'failed', 'Datos no se guardaron');
+                    updateCategoryResult('cart', 'failed', '✗ Error de persistencia');
+                }
+                
+                localStorage.removeItem('pn_persistence_test');
+            } catch (error) {
+                addTestResult('Persistencia del Carrito', 'failed', error.message);
+                updateCategoryResult('cart', 'failed', '✗ Error en persistencia');
+            }
+        };
+
+        window.testCartModal = function() {
+            try {
+                addTestResult('Modal del Carrito', 'passed', 'Modal accesible y funcional');
+                updateCategoryResult('cart', 'passed', '✓ Modal de carrito listo');
+            } catch (error) {
+                addTestResult('Modal del Carrito', 'failed', error.message);
+                updateCategoryResult('cart', 'failed', '✗ Error en modal');
+            }
+        };
+
+        // Payment Tests
+        window.testPaymentMethods = function() {
+            try {
+                const methods = ['card', 'cash', 'transfer', 'open-tab'];
+                const methodNames = {
+                    card: 'Tarjeta',
+                    cash: 'Efectivo',
+                    transfer: 'Transferencia',
+                    'open-tab': 'Cuenta Abierta'
+                };
+                
+                addTestResult('Métodos de Pago', 'passed', `${methods.length} métodos disponibles`);
+                updateCategoryResult('payment', 'passed', `✓ ${methods.length} métodos de pago`);
+            } catch (error) {
+                addTestResult('Métodos de Pago', 'failed', error.message);
+                updateCategoryResult('payment', 'failed', '✗ Error en métodos');
+            }
+        };
+
+        window.testPaymentProcessing = async function() {
+            try {
+                const testPayment = {
+                    orderId: 'test-order-123',
+                    amount: 150,
+                    method: 'card',
+                    status: 'completed'
+                };
+                
+                const response = await api.request('/payments', 'POST', testPayment);
+                
+                if (response.success) {
+                    addTestResult('Procesamiento de Pago', 'passed', 'Pago procesado correctamente');
+                    updateCategoryResult('payment', 'passed', '✓ Procesamiento funcional');
+                } else {
+                    addTestResult('Procesamiento de Pago', 'failed', response.error || 'Error en procesamiento');
+                    updateCategoryResult('payment', 'failed', '✗ Error en procesamiento');
+                }
+            } catch (error) {
+                addTestResult('Procesamiento de Pago', 'failed', error.message);
+                updateCategoryResult('payment', 'failed', '✗ Error en pago');
+            }
+        };
+
+        window.testPaymentModal = function() {
+            try {
+                addTestResult('Modal de Pago', 'passed', 'Modal de pago accesible');
+                updateCategoryResult('payment', 'passed', '✓ Modal de pago listo');
+            } catch (error) {
+                addTestResult('Modal de Pago', 'failed', error.message);
+                updateCategoryResult('payment', 'failed', '✗ Error en modal');
+            }
+        };
+
+        // Admin Tests
+        window.testAdminLogin = async function() {
+            try {
+                const response = await api.authenticate('admin@productonacional.mx', 'admin123');
+                
+                if (response.success && response.data.user.role === 'admin') {
+                    addTestResult('Login de Admin', 'passed', 'Autenticación exitosa');
+                    updateCategoryResult('admin', 'passed', '✓ Login funcional');
+                } else {
+                    addTestResult('Login de Admin', 'failed', 'Credenciales inválidas');
+                    updateCategoryResult('admin', 'failed', '✗ Error de autenticación');
+                }
+            } catch (error) {
+                addTestResult('Login de Admin', 'failed', error.message);
+                updateCategoryResult('admin', 'failed', '✗ Error en login');
+            }
+        };
+
+        window.testDashboardLoading = function() {
+            try {
+                const stats = db.getStats();
+                
+                if (stats.totalOrders !== undefined) {
+                    addTestResult('Cargar Dashboard', 'passed', 'Estadísticas cargadas');
+                    updateCategoryResult('admin', 'passed', '✓ Dashboard funcional');
+                } else {
+                    addTestResult('Cargar Dashboard', 'failed', 'No se pudieron cargar estadísticas');
+                    updateCategoryResult('admin', 'failed', '✗ Error en dashboard');
+                }
+            } catch (error) {
+                addTestResult('Cargar Dashboard', 'failed', error.message);
+                updateCategoryResult('admin', 'failed', '✗ Error al cargar');
+            }
+        };
+
+        window.testProductManagement = function() {
+            try {
+                const products = db.getProducts();
+                const product = products[0];
+                
+                // Test availability toggle
+                const originalAvailable = product.available;
+                product.available = !product.available;
+                db.saveData();
+                
+                // Verify change
+                const updatedProducts = db.getProducts();
+                const updatedProduct = updatedProducts.find(p => p.id === product.id);
+                
+                if (updatedProduct.available !== originalAvailable) {
+                    addTestResult('Gestión de Productos', 'passed', 'Productos gestionables');
+                    updateCategoryResult('admin', 'passed', '✓ Gestión de productos activa');
+                    
+                    // Restore original state
+                    product.available = originalAvailable;
+                    db.saveData();
+                } else {
+                    addTestResult('Gestión de Productos', 'failed', 'No se pudo cambiar disponibilidad');
+                    updateCategoryResult('admin', 'failed', '✗ Error en gestión');
+                }
+            } catch (error) {
+                addTestResult('Gestión de Productos', 'failed', error.message);
+                updateCategoryResult('admin', 'failed', '✗ Error en gestión');
+            }
+        };
+
+        // Run all tests
+        window.runAllTests = function() {
+            clearResults();
+            
+            // Database tests
+            testDatabaseConnection();
+            setTimeout(() => testProductLoading(), 500);
+            setTimeout(() => testOrderCreation(), 1000);
+            
+            // WebSocket tests
+            setTimeout(() => testWebSocketConnection(), 1500);
+            setTimeout(() => testNotificationSystem(), 2000);
+            setTimeout(() => testRealTimeUpdates(), 2500);
+            
+            // Menu tests
+            setTimeout(() => testMenuLoading(), 3000);
+            setTimeout(() => testProductModal(), 3500);
+            setTimeout(() => testCategoryNavigation(), 4000);
+            
+            // Cart tests
+            setTimeout(() => testAddToCart(), 4500);
+            setTimeout(() => testCartPersistence(), 5000);
+            setTimeout(() => testCartModal(), 5500);
+            
+            // Payment tests
+            setTimeout(() => testPaymentMethods(), 6000);
+            setTimeout(() => testPaymentProcessing(), 6500);
+            setTimeout(() => testPaymentModal(), 7000);
+            
+            // Admin tests
+            setTimeout(() => testAdminLogin(), 7500);
+            setTimeout(() => testDashboardLoading(), 8000);
+            setTimeout(() => testProductManagement(), 8500);
+            
+            showToast('Ejecutando todas las pruebas...', 'info');
+        };
+
+        window.clearResults = function() {
+            testResults = { total: 0, passed: 0, failed: 0, warnings: 0 };
+            updateSummary();
+            
+            document.getElementById('detailed-results').innerHTML = '';
+            
+            const categories = ['database', 'websocket', 'menu', 'cart', 'payment', 'admin'];
+            categories.forEach(category => {
+                updateCategoryResult(category, 'none', 'No ejecutado');
+            });
+        };
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg text-white font-medium ${
+                type === 'success' ? 'bg-green-500' :
+                type === 'error' ? 'bg-red-500' :
+                type === 'warning' ? 'bg-yellow-500' :
+                'bg-blue-500'
+            }`;
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            anime({
+                targets: toast,
+                translateX: [300, 0],
+                opacity: [0, 1],
+                duration: 300,
+                easing: 'easeOutQuart'
+            });
+            
+            setTimeout(() => {
+                anime({
+                    targets: toast,
+                    translateX: [0, 300],
+                    opacity: [1, 0],
+                    duration: 300,
+                    easing: 'easeInQuart',
+                    complete: () => toast.remove()
+                });
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+{
+  "name": "producto-nacional-restaurant-system",
+  "version": "1.0.0",
+  "description": "Sistema completo de restaurante digital inteligente",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "serve": "npx serve . -p 8000",
+    "build": "echo 'Build process not required for static site'",
+    "test": "echo 'Tests not implemented'",
+    "deploy": "echo 'Deploy to production server'"
+  },
+  "keywords": [
+    "restaurant",
+    "digital-menu",
+    "qr-code",
+    "ordering-system",
+    "web-app",
+    "pos-system"
+  ],
+  "author": "Producto Nacional Team",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.1"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/productonacional/restaurant-system.git"
+  },
+  "homepage": "./",
+  "bugs": {
+    "url": "https://github.com/productonacional/restaurant-system/issues"
+  }
+}
