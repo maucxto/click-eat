@@ -3,434 +3,761 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de QR - Producto Nacional</title>
+    <title>Generador de Códigos QR - PRODUCTO NACIONAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap');
         
         :root {
-            --primary-gold: #d4a574;
-            --primary-gold-light: #e6c08a;
-            --primary-gold-dark: #b8935f;
-            --text-dark: #1a1a1a;
-            --text-light: #6b7280;
-            --bg-cream: #faf8f5;
-            --bg-white: #ffffff;
+            --primary: #D4AF37;
+            --primary-dark: #B8941F;
+            --secondary: #8B4513;
+            --accent: #CD853F;
+            --text-dark: #2D1810;
+            --text-light: #6B5B73;
+            --bg-light: #FFF8F0;
+            --bg-card: #FFFFFF;
         }
-
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-cream);
+            background: linear-gradient(135deg, var(--bg-light) 0%, #F5E6D3 100%);
+            min-height: 100vh;
             color: var(--text-dark);
         }
-
-        .font-display {
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+        }
+        
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .qr-generator {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+        }
+        
+        .btn-secondary:hover {
+            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.3);
+        }
+        
+        .qr-display {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .qr-code {
+            margin: 2rem 0;
+            padding: 2rem;
+            background: white;
+            border-radius: 16px;
+            display: inline-block;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .table-info {
+            background: linear-gradient(135deg, var(--bg-light) 0%, #F5E6D3 100%);
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-top: 1rem;
+            border: 2px solid var(--primary);
+        }
+        
+        .table-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
             font-family: 'Playfair Display', serif;
         }
-
-        .gradient-gold {
-            background: linear-gradient(135deg, var(--primary-gold) 0%, var(--primary-gold-light) 100%);
+        
+        .table-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
         }
-
-        .text-gold {
-            color: var(--primary-gold);
+        
+        .batch-generation {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
         }
-
-        .border-gold {
-            border-color: var(--primary-gold);
+        
+        .qr-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
         }
-
+        
         .qr-card {
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
         }
-
+        
         .qr-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.25);
         }
-
-        .qr-code {
-            image-rendering: pixelated;
+        
+        .qr-card canvas {
+            margin: 0 auto;
+            display: block;
         }
-
-        .table-card {
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 4px 20px rgba(212, 165, 116, 0.15);
+        
+        .print-section {
+            display: none;
+        }
+        
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            
+            .print-section {
+                display: block !important;
+            }
+            
+            body {
+                background: white !important;
+            }
+            
+            .qr-card {
+                break-inside: avoid;
+                margin-bottom: 1rem;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+        
+        .navigation {
+            background: var(--bg-card);
+            padding: 1rem 2rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-link {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-link:hover {
+            background: var(--bg-light);
+            color: var(--primary);
+        }
+        
+        .nav-link.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .qr-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-100 px-6 py-4">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-                <div class="w-12 h-12 gradient-gold rounded-full flex items-center justify-center">
-                    <i class="fas fa-qrcode text-white text-xl"></i>
-                </div>
+    <div class="header">
+        <h1><i class="fas fa-qrcode"></i> Generador de Códigos QR</h1>
+        <p>PRODUCTO NACIONAL - Sistema de Menú Digital</p>
+    </div>
+
+    <div class="container">
+        <div class="navigation no-print">
+            <a href="index.html" class="nav-link">
+                <i class="fas fa-home"></i> Inicio
+            </a>
+            <a href="menu.html" class="nav-link">
+                <i class="fas fa-utensils"></i> Menú Demo
+            </a>
+            <a href="qr-generator.html" class="nav-link active">
+                <i class="fas fa-qrcode"></i> Generador QR
+            </a>
+        </div>
+
+        <div class="qr-generator no-print">
+            <h2 style="margin-bottom: 1.5rem; color: var(--text-dark);">
+                <i class="fas fa-cog"></i> Configuración del Código QR
+            </h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
                 <div>
-                    <h1 class="font-display text-2xl font-bold text-gray-800">Generador de Códigos QR</h1>
-                    <p class="text-sm text-gray-500">Códigos únicos para cada mesa</p>
+                    <div class="form-group">
+                        <label for="table-number">
+                            <i class="fas fa-table"></i> Número de Mesa
+                        </label>
+                        <input type="number" id="table-number" min="1" max="50" value="1" placeholder="Ingresa el número de mesa">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="base-url">
+                            <i class="fas fa-link"></i> URL Base del Menú
+                        </label>
+                        <input type="url" id="base-url" value="https://producto-nacional.com/menu.html" placeholder="URL del menú digital">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="qr-size">
+                            <i class="fas fa-expand"></i> Tamaño del QR
+                        </label>
+                        <select id="qr-size">
+                            <option value="128">Pequeño (128x128)</option>
+                            <option value="256" selected>Mediano (256x256)</option>
+                            <option value="512">Grande (512x512)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="form-group">
+                        <label for="table-capacity">
+                            <i class="fas fa-users"></i> Capacidad de la Mesa
+                        </label>
+                        <input type="number" id="table-capacity" min="1" max="12" value="4" placeholder="Número de personas">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="table-location">
+                            <i class="fas fa-map-marker-alt"></i> Ubicación de la Mesa
+                        </label>
+                        <select id="table-location">
+                            <option value="interior">Interior</option>
+                            <option value="exterior">Exterior</option>
+                            <option value="privada">Zona Privada</option>
+                            <option value="bar">Cerca del Bar</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" id="include-wifi" checked>
+                            <i class="fas fa-wifi"></i> Incluir información del WiFi
+                        </label>
+                    </div>
                 </div>
             </div>
             
-            <div class="flex items-center space-x-4">
-                <button onclick="generateAllQRs()" class="gradient-gold text-white px-4 py-2 rounded-lg hover:shadow-lg transition-all">
-                    <i class="fas fa-magic mr-2"></i>
-                    Generar Todos
+            <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
+                <button class="btn" onclick="generateQR()">
+                    <i class="fas fa-magic"></i> Generar Código QR
                 </button>
-                <button onclick="printAllQRs()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
-                    <i class="fas fa-print mr-2"></i>
-                    Imprimir Todo
+                <button class="btn btn-secondary" onclick="generateBatch()">
+                    <i class="fas fa-layer-group"></i> Generar Todas las Mesas
                 </button>
             </div>
         </div>
-    </header>
 
-    <!-- Main Content -->
-    <main class="px-6 py-8">
-        <div class="max-w-7xl mx-auto">
-            <!-- Instructions -->
-            <div class="bg-white rounded-2xl p-6 shadow-lg mb-8">
-                <h2 class="font-display text-xl font-bold text-gray-800 mb-4">
-                    <i class="fas fa-info-circle text-gold mr-2"></i>
-                    Instrucciones de Uso
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
-                    <div class="flex items-start space-x-3">
-                        <div class="w-6 h-6 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-xs font-bold">1</div>
-                        <div>
-                            <h3 class="font-semibold text-gray-800 mb-1">Generar Códigos</h3>
-                            <p>Los códigos QR se generan automáticamente para cada mesa con su URL única.</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start space-x-3">
-                        <div class="w-6 h-6 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-xs font-bold">2</div>
-                        <div>
-                            <h3 class="font-semibold text-gray-800 mb-1">Imprimir Códigos</h3>
-                            <p>Imprime los códigos QR en papel o vinilo para colocarlos en cada mesa.</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start space-x-3">
-                        <div class="w-6 h-6 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-xs font-bold">3</div>
-                        <div>
-                            <h3 class="font-semibold text-gray-800 mb-1">Colocar en Mesas</h3>
-                            <p>Coloca cada código QR en su mesa correspondiente para que los clientes puedan escanearlos.</p>
-                        </div>
-                    </div>
+        <div class="qr-display" id="qr-display" style="display: none;">
+            <h2 style="margin-bottom: 1rem; color: var(--text-dark);">
+                <i class="fas fa-qrcode"></i> Código QR Generado
+            </h2>
+            
+            <div class="qr-code" id="qr-code-container">
+                <!-- QR Code will be generated here -->
+            </div>
+            
+            <div class="table-info">
+                <div class="table-label">MESA</div>
+                <div class="table-number" id="display-table-number">1</div>
+                <div style="margin-top: 1rem;">
+                    <strong>Escanea para ver el menú</strong><br>
+                    <small style="color: var(--text-light);">
+                        <i class="fas fa-mobile-alt"></i> Apunta tu cámara al código QR
+                    </small>
+                </div>
+                <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-light);">
+                    <i class="fas fa-wifi"></i> WiFi: PRODUCTO_NACIONAL | Contraseña: Comida2024!
                 </div>
             </div>
-
-            <!-- QR Cards Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6" id="qr-grid">
-                <!-- QR cards will be generated here -->
-            </div>
-
-            <!-- Empty State -->
-            <div id="empty-state" class="text-center py-12">
-                <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-qrcode text-4xl text-gray-400"></i>
-                </div>
-                <h3 class="text-xl font-semibold text-gray-600 mb-2">No hay códigos QR generados</h3>
-                <p class="text-gray-500 mb-6">Haz clic en "Generar Todos" para crear los códigos QR para cada mesa</p>
-                <button onclick="generateAllQRs()" class="gradient-gold text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all">
-                    <i class="fas fa-magic mr-2"></i>
-                    Generar Códigos QR
+            
+            <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;" class="no-print">
+                <button class="btn" onclick="downloadQR()">
+                    <i class="fas fa-download"></i> Descargar QR
+                </button>
+                <button class="btn btn-secondary" onclick="printQR()">
+                    <i class="fas fa-print"></i> Imprimir
+                </button>
+                <button class="btn" onclick="generateNewQR()">
+                    <i class="fas fa-plus"></i> Generar Nuevo
                 </button>
             </div>
         </div>
-    </main>
 
-    <!-- Print Styles -->
-    <style id="print-styles" media="print">
-        body { background: white !important; }
-        header, .bg-white.rounded-2xl.p-6.shadow-lg { display: none !important; }
-        .qr-card { 
-            break-inside: avoid; 
-            margin-bottom: 20px; 
-            box-shadow: none !important;
-            border: 1px solid #e5e7eb;
-        }
-        .qr-card:hover { transform: none !important; }
-    </style>
+        <div class="batch-generation no-print" id="batch-section" style="display: none;">
+            <h2 style="margin-bottom: 1rem; color: var(--text-dark);">
+                <i class="fas fa-layer-group"></i> Códigos QR de Todas las Mesas
+            </h2>
+            
+            <div style="margin-bottom: 2rem; text-align: center;">
+                <p style="color: var(--text-light); margin-bottom: 1rem;">
+                    Se han generado códigos QR para todas las mesas del restaurante
+                </p>
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <button class="btn" onclick="printAllQRCodes()">
+                        <i class="fas fa-print"></i> Imprimir Todos
+                    </button>
+                    <button class="btn btn-secondary" onclick="downloadAllQRCodes()">
+                        <i class="fas fa-download"></i> Descargar Todos
+                    </button>
+                </div>
+            </div>
+            
+            <div class="qr-grid" id="batch-qr-grid">
+                <!-- Batch QR codes will be generated here -->
+            </div>
+        </div>
+    </div>
 
-    <script src="config.js"></script>
+    <div class="print-section" id="print-section">
+        <!-- Print content will be generated here -->
+    </div>
+
     <script>
-        // QR Generator Script
-        const baseURL = window.ClickEatConfig ? window.ClickEatConfig.baseURL : 'producto-nacional/menu.html';
-        const totalTables = window.ClickEatConfig ? window.ClickEatConfig.totalTables : 20;
-        let qrCodes = [];
+        let currentQRData = null;
+        let batchQRCodes = [];
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            loadExistingQRCodes();
-        });
+        function generateQR() {
+            const tableNumber = document.getElementById('table-number').value;
+            const baseUrl = document.getElementById('base-url').value;
+            const qrSize = parseInt(document.getElementById('qr-size').value);
+            const capacity = document.getElementById('table-capacity').value;
+            const location = document.getElementById('table-location').value;
+            const includeWifi = document.getElementById('include-wifi').checked;
 
-        function loadExistingQRCodes() {
-            const savedQRCodes = localStorage.getItem('pn_qr_codes');
-            if (savedQRCodes) {
-                qrCodes = JSON.parse(savedQRCodes);
-                renderQRCodes();
-            }
-        }
-
-        function generateAllQRs() {
-            qrCodes = [];
-            
-            for (let i = 1; i <= totalTables; i++) {
-                const url = `${baseURL}?table=${i}`;
-                const qrData = {
-                    table: i,
-                    url: url,
-                    generatedAt: new Date().toISOString()
-                };
-                qrCodes.push(qrData);
-            }
-            
-            localStorage.setItem('pn_qr_codes', JSON.stringify(qrCodes));
-            renderQRCodes();
-            
-            showToast('Códigos QR generados exitosamente', 'success');
-        }
-
-        function renderQRCodes() {
-            const grid = document.getElementById('qr-grid');
-            const emptyState = document.getElementById('empty-state');
-            
-            if (qrCodes.length === 0) {
-                grid.innerHTML = '';
-                emptyState.classList.remove('hidden');
+            if (!tableNumber || !baseUrl) {
+                alert('Por favor completa todos los campos requeridos');
                 return;
             }
-            
-            emptyState.classList.add('hidden');
-            
-            grid.innerHTML = qrCodes.map(qrData => createQRCard(qrData)).join('');
-            
-            // Generate QR codes after rendering
-            setTimeout(() => {
-                qrCodes.forEach(qrData => {
-                    generateQRCode(qrData.table, qrData.url);
-                });
-            }, 100);
-            
-            // Animate cards
-            anime({
-                targets: '.qr-card',
-                scale: [0.9, 1],
-                opacity: [0, 1],
-                delay: anime.stagger(50),
-                duration: 500,
-                easing: 'easeOutQuart'
-            });
-        }
 
-        function createQRCard(qrData) {
-            return `
-                <div class="qr-card bg-white rounded-2xl p-6 shadow-lg">
-                    <div class="text-center mb-4">
-                        <h3 class="font-display text-2xl font-bold text-gray-800">Mesa ${qrData.table}</h3>
-                        <p class="text-sm text-gray-500">Escanea para ver el menú</p>
-                    </div>
-                    
-                    <div class="flex justify-center mb-4">
-                        <div class="bg-white p-4 rounded-xl border-2 border-gray-100">
-                            <canvas id="qr-${qrData.table}" class="qr-code"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="space-y-2 text-xs text-gray-500">
-                        <div class="flex justify-between">
-                            <span>Generado:</span>
-                            <span>${formatDate(qrData.generatedAt)}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>URL:</span>
-                            <span class="truncate max-w-20">${qrData.url}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="flex space-x-2 mt-4">
-                        <button onclick="downloadQR(${qrData.table})" 
-                                class="flex-1 bg-blue-500 text-white py-2 px-3 rounded-lg text-sm hover:bg-blue-600 transition-colors">
-                            <i class="fas fa-download mr-1"></i>
-                            Descargar
-                        </button>
-                        <button onclick="printQR(${qrData.table})" 
-                                class="flex-1 bg-green-500 text-white py-2 px-3 rounded-lg text-sm hover:bg-green-600 transition-colors">
-                            <i class="fas fa-print mr-1"></i>
-                            Imprimir
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function generateQRCode(tableNumber, url) {
-            const canvas = document.getElementById(`qr-${tableNumber}`);
-            if (!canvas) return;
+            // Generate the menu URL with table parameters
+            const menuUrl = `${baseUrl}?table=${tableNumber}&capacity=${capacity}&location=${location}`;
             
-            QRCode.toCanvas(canvas, url, {
-                width: 150,
-                margin: 1,
+            // Store current QR data
+            currentQRData = {
+                tableNumber,
+                menuUrl,
+                qrSize,
+                capacity,
+                location,
+                includeWifi
+            };
+
+            // Clear previous QR code
+            const container = document.getElementById('qr-code-container');
+            container.innerHTML = '';
+
+            // Generate new QR code
+            QRCode.toCanvas(container, menuUrl, {
+                width: qrSize,
+                margin: 2,
                 color: {
-                    dark: '#1a1a1a',
-                    light: '#ffffff'
-                }
+                    dark: '#2D1810',
+                    light: '#FFFFFF'
+                },
+                errorCorrectionLevel: 'M'
             }, function (error) {
                 if (error) {
                     console.error('Error generating QR code:', error);
+                    alert('Error al generar el código QR');
+                    return;
                 }
+
+                // Update display
+                document.getElementById('display-table-number').textContent = tableNumber;
+                document.getElementById('qr-display').style.display = 'block';
+                
+                // Scroll to QR display
+                document.getElementById('qr-display').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'center'
+                });
             });
         }
 
-        function downloadQR(tableNumber) {
-            const canvas = document.getElementById(`qr-${tableNumber}`);
-            if (!canvas) return;
-            
-            const link = document.createElement('a');
-            link.download = `mesa-${tableNumber}-qr.png`;
-            link.href = canvas.toDataURL();
-            link.click();
-            
-            showToast(`QR de mesa ${tableNumber} descargado`, 'success');
-        }
+        function generateBatch() {
+            const baseUrl = document.getElementById('base-url').value;
+            const qrSize = 256; // Fixed size for batch generation
+            const totalTables = 20; // Generate QR codes for 20 tables
 
-        function printQR(tableNumber) {
-            const printWindow = window.open('', '_blank');
-            const canvas = document.getElementById(`qr-${tableNumber}`);
-            
-            printWindow.document.write(`
-                <html>
-                <head>
-                    <title>Mesa ${tableNumber} - QR</title>
-                    <style>
-                        body { 
-                            font-family: Arial, sans-serif; 
-                            display: flex; 
-                            flex-direction: column; 
-                            align-items: center; 
-                            justify-content: center; 
-                            height: 100vh; 
-                            margin: 0;
-                        }
-                        .qr-container { text-align: center; }
-                        h1 { margin-bottom: 20px; color: #333; }
-                        .info { margin-top: 20px; font-size: 14px; color: #666; }
-                    </style>
-                </head>
-                <body>
-                    <div class="qr-container">
-                        <h1>Mesa ${tableNumber}</h1>
-                        <img src="${canvas.toDataURL()}" style="width: 200px; height: 200px;">
-                        <div class="info">
-                            <p>Escanea para ver el menú</p>
-                            <p>${window.ClickEatConfig ? window.ClickEatConfig.domainName : 'click-eat'}</p>
-                        </div>
-                    </div>
-                </body>
-                </html>
-            `);
-            
-            printWindow.document.close();
-            printWindow.print();
-            
-            showToast(`QR de mesa ${tableNumber} enviado a imprimir`, 'info');
-        }
-
-        function printAllQRs() {
-            if (qrCodes.length === 0) {
-                showToast('No hay códigos QR para imprimir', 'warning');
+            if (!baseUrl) {
+                alert('Por favor ingresa la URL base del menú');
                 return;
             }
-            
-            const printWindow = window.open('', '_blank');
-            
-            let qrImages = '';
-            qrCodes.forEach(qrData => {
-                const canvas = document.getElementById(`qr-${qrData.table}`);
-                if (canvas) {
-                    qrImages += `
-                        <div style="page-break-after: always; text-align: center; padding: 20px;">
-                            <h2 style="margin-bottom: 20px;">Mesa ${qrData.table}</h2>
-                            <img src="${canvas.toDataURL()}" style="width: 150px; height: 150px;">
-                            <p style="margin-top: 15px; font-size: 12px; color: #666;">
-                                Escanea para ver el menú<br>
-                                ${window.ClickEatConfig ? window.ClickEatConfig.domainName : 'click-eat'}
-                            </p>
-                        </div>
-                    `;
-                }
+
+            // Clear previous batch
+            batchQRCodes = [];
+            const grid = document.getElementById('batch-qr-grid');
+            grid.innerHTML = '';
+
+            // Show loading message
+            const loadingMessage = document.createElement('div');
+            loadingMessage.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: var(--text-light);">
+                    <i class="fas fa-spinner fa-spin fa-2x"></i>
+                    <p style="margin-top: 1rem;">Generando códigos QR...</p>
+                </div>
+            `;
+            grid.appendChild(loadingMessage);
+
+            document.getElementById('batch-section').style.display = 'block';
+            document.getElementById('batch-section').scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'center'
             });
-            
+
+            // Generate QR codes for all tables
+            let completed = 0;
+            for (let tableNumber = 1; tableNumber <= totalTables; tableNumber++) {
+                const menuUrl = `${baseUrl}?table=${tableNumber}&capacity=4&location=interior`;
+                
+                const qrCard = document.createElement('div');
+                qrCard.className = 'qr-card';
+                qrCard.innerHTML = `
+                    <div class="table-info">
+                        <div class="table-label">MESA</div>
+                        <div class="table-number">${tableNumber}</div>
+                    </div>
+                    <canvas id="qr-${tableNumber}"></canvas>
+                    <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-light);">
+                        <i class="fas fa-wifi"></i> WiFi: PRODUCTO_NACIONAL
+                    </div>
+                `;
+                
+                grid.appendChild(qrCard);
+
+                // Generate QR code
+                const canvas = document.getElementById(`qr-${tableNumber}`);
+                QRCode.toCanvas(canvas, menuUrl, {
+                    width: qrSize,
+                    margin: 2,
+                    color: {
+                        dark: '#2D1810',
+                        light: '#FFFFFF'
+                    },
+                    errorCorrectionLevel: 'M'
+                }, function (error) {
+                    if (error) {
+                        console.error(`Error generating QR for table ${tableNumber}:`, error);
+                    } else {
+                        batchQRCodes.push({
+                            tableNumber,
+                            menuUrl,
+                            canvas
+                        });
+                    }
+                    
+                    completed++;
+                    if (completed === totalTables) {
+                        // Remove loading message
+                        loadingMessage.remove();
+                        
+                        // Show success message
+                        const successMessage = document.createElement('div');
+                        successMessage.innerHTML = `
+                            <div style="text-align: center; padding: 1rem; color: var(--primary);">
+                                <i class="fas fa-check-circle fa-2x"></i>
+                                <p style="margin-top: 0.5rem;">¡${totalTables} códigos QR generados exitosamente!</p>
+                            </div>
+                        `;
+                        grid.insertBefore(successMessage, grid.firstChild);
+                        
+                        setTimeout(() => successMessage.remove(), 3000);
+                    }
+                });
+            }
+        }
+
+        function downloadQR() {
+            if (!currentQRData) {
+                alert('Por favor genera un código QR primero');
+                return;
+            }
+
+            const canvas = document.querySelector('#qr-code-container canvas');
+            if (canvas) {
+                const link = document.createElement('a');
+                link.download = `qr-mesa-${currentQRData.tableNumber}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+            }
+        }
+
+        function printQR() {
+            if (!currentQRData) {
+                alert('Por favor genera un código QR primero');
+                return;
+            }
+
+            const printContent = document.createElement('div');
+            printContent.innerHTML = `
+                <div style="text-align: center; padding: 2rem; font-family: Arial, sans-serif;">
+                    <div style="background: #f8f9fa; padding: 2rem; border-radius: 16px; display: inline-block;">
+                        <h2 style="color: #D4AF37; margin-bottom: 1rem; font-size: 2rem;">
+                            PRODUCTO NACIONAL
+                        </h2>
+                        <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                            <div style="font-size: 1.2rem; color: #6c757d; margin-bottom: 0.5rem;">MESA</div>
+                            <div style="font-size: 3rem; color: #D4AF37; font-weight: bold; margin-bottom: 1rem;">
+                                ${currentQRData.tableNumber}
+                            </div>
+                            ${document.querySelector('#qr-code-container').innerHTML}
+                            <div style="margin-top: 1rem; font-size: 1rem; color: #6c757d;">
+                                <strong>Escanea para ver el menú</strong><br>
+                                <small>Apunta tu cámara al código QR</small>
+                            </div>
+                            <div style="margin-top: 1rem; font-size: 0.8rem; color: #6c757d;">
+                                <i class="fas fa-wifi"></i> WiFi: PRODUCTO_NACIONAL | Contraseña: Comida2024!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const printWindow = window.open('', '_blank');
             printWindow.document.write(`
                 <html>
-                <head>
-                    <title>Códigos QR - Producto Nacional</title>
-                    <style>
-                        @page { margin: 0.5in; }
-                        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
-                        .qr-page { page-break-after: always; text-align: center; }
-                    </style>
-                </head>
-                <body>
-                    ${qrImages}
-                </body>
+                    <head>
+                        <title>QR Mesa ${currentQRData.tableNumber}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+                            @media print {
+                                body { margin: 0; padding: 0; }
+                                .print-page { page-break-after: always; }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        ${printContent.innerHTML}
+                    </body>
                 </html>
             `);
-            
             printWindow.document.close();
             printWindow.print();
-            
-            showToast('Todos los códigos QR fueron enviados a imprimir', 'info');
         }
 
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('es-MX', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
+        function generateNewQR() {
+            document.getElementById('qr-display').style.display = 'none';
+            document.getElementById('table-number').value = parseInt(document.getElementById('table-number').value) + 1;
+            document.getElementById('table-number').focus();
         }
 
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg text-white font-medium ${
-                type === 'success' ? 'bg-green-500' :
-                type === 'error' ? 'bg-red-500' :
-                type === 'warning' ? 'bg-yellow-500' :
-                'bg-blue-500'
-            }`;
-            toast.textContent = message;
+        function printAllQRCodes() {
+            if (batchQRCodes.length === 0) {
+                alert('Por favor genera los códigos QR por lotes primero');
+                return;
+            }
+
+            const printContent = document.createElement('div');
+            printContent.className = 'print-section';
             
-            document.body.appendChild(toast);
-            
-            anime({
-                targets: toast,
-                translateX: [300, 0],
-                opacity: [0, 1],
-                duration: 300,
-                easing: 'easeOutQuart'
+            batchQRCodes.forEach((qrData, index) => {
+                const page = document.createElement('div');
+                page.className = 'print-page';
+                page.style.cssText = `
+                    text-align: center; 
+                    padding: 2rem; 
+                    font-family: Arial, sans-serif;
+                    page-break-after: always;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 100vh;
+                `;
+                
+                page.innerHTML = `
+                    <div style="background: #f8f9fa; padding: 2rem; border-radius: 16px;">
+                        <h2 style="color: #D4AF37; margin-bottom: 1rem; font-size: 2rem;">
+                            PRODUCTO NACIONAL
+                        </h2>
+                        <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                            <div style="font-size: 1.2rem; color: #6c757d; margin-bottom: 0.5rem;">MESA</div>
+                            <div style="font-size: 3rem; color: #D4AF37; font-weight: bold; margin-bottom: 1rem;">
+                                ${qrData.tableNumber}
+                            </div>
+                            <div style="margin: 0 auto; display: inline-block;">
+                                ${qrData.canvas.outerHTML}
+                            </div>
+                            <div style="margin-top: 1rem; font-size: 1rem; color: #6c757d;">
+                                <strong>Escanea para ver el menú</strong><br>
+                                <small>Apunta tu cámara al código QR</small>
+                            </div>
+                            <div style="margin-top: 1rem; font-size: 0.8rem; color: #6c757d;">
+                                <i class="fas fa-wifi"></i> WiFi: PRODUCTO_NACIONAL | Contraseña: Comida2024!
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                printContent.appendChild(page);
             });
-            
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Códigos QR - Todas las Mesas</title>
+                        <style>
+                            @media print {
+                                @page { margin: 0; }
+                                body { margin: 0; padding: 0; }
+                                .print-page { page-break-after: always; }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        ${printContent.innerHTML}
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        function downloadAllQRCodes() {
+            if (batchQRCodes.length === 0) {
+                alert('Por favor genera los códigos QR por lotes primero');
+                return;
+            }
+
+            // Create a temporary container for downloading
+            const container = document.createElement('div');
+            container.style.display = 'none';
+            document.body.appendChild(container);
+
+            batchQRCodes.forEach((qrData, index) => {
+                setTimeout(() => {
+                    const link = document.createElement('a');
+                    link.download = `qr-mesa-${qrData.tableNumber}.png`;
+                    link.href = qrData.canvas.toDataURL();
+                    link.click();
+                }, index * 200); // Delay between downloads to avoid browser blocking
+            });
+
             setTimeout(() => {
-                anime({
-                    targets: toast,
-                    translateX: [0, 300],
-                    opacity: [1, 0],
-                    duration: 300,
-                    easing: 'easeInQuart',
-                    complete: () => toast.remove()
-                });
-            }, 3000);
+                document.body.removeChild(container);
+            }, batchQRCodes.length * 200 + 1000);
         }
+
+        // Initialize with sample QR code
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-generate first QR code
+            setTimeout(() => {
+                generateQR();
+            }, 1000);
+        });
+
+        // Handle Enter key in table number input
+        document.getElementById('table-number').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateQR();
+            }
+        });
     </script>
 </body>
 </html>
