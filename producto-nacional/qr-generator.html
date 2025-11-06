@@ -69,15 +69,20 @@
     <header class="bg-white shadow-sm border-b border-gray-100 px-6 py-4">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <div class="flex items-center space-x-4">
-                <div class="w-12 h-12 gradient-gold rounded-full flex items-center justify-center">
-                    <i class="fas fa-qrcode text-white text-xl"></i>
-                </div>
-                <div>
-                    <h1 class="font-display text-2xl font-bold text-gray-800">Generador de Códigos QR</h1>
-                    <p class="text-sm text-gray-500">Códigos únicos para cada mesa</p>
+                <a href="index.html" class="w-10 h-10 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center transition-colors">
+                    <i class="fas fa-arrow-left text-gray-600"></i>
+                </a>
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 gradient-gold rounded-full flex items-center justify-center">
+                        <i class="fas fa-qrcode text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-display text-2xl font-bold text-gray-800">Generador de Códigos QR</h1>
+                        <p class="text-sm text-gray-500">Códigos únicos para cada mesa</p>
+                    </div>
                 </div>
             </div>
-            
+
             <div class="flex items-center space-x-4">
                 <button onclick="generateAllQRs()" class="gradient-gold text-white px-4 py-2 rounded-lg hover:shadow-lg transition-all">
                     <i class="fas fa-magic mr-2"></i>
