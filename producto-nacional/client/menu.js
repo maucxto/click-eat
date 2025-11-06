@@ -643,11 +643,23 @@ function closeSuccessModal() {
 function scrollToCategory(category) {
     const element = document.getElementById(`category-${category}`);
     if (element) {
-        // Usar scrollIntoView nativo con scroll-margin-top definido en CSS
-        element.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-        });
+        // Solución híbrida: CSS scroll-margin-top + JavaScript fallback
+        // Primero intentar con scrollIntoView nativo (usa CSS scroll-margin-top)
+        try {
+            element.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        } catch (error) {
+            // Fallback: scroll manual con offset
+            const rect = element.getBoundingClientRect();
+            const absoluteTop = rect.top + window.pageYOffset;
+            const offset = 120; // 120px de offset para elementos sticky
+            window.scrollTo({
+                top: absoluteTop - offset,
+                behavior: 'smooth'
+            });
+        }
     }
 
     // Update active category button
