@@ -7,6 +7,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
+    <!-- Fallback QRCode library -->
+    <script>
+        // Fallback si la librería principal falla
+        if (typeof QRCode === 'undefined') {
+            console.warn('Cargando librería QRCode alternativa...');
+            document.write('<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"><\/script>');
+        }
+    </script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
@@ -91,6 +99,10 @@
                 <button onclick="printAllQRs()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
                     <i class="fas fa-print mr-2"></i>
                     Imprimir Todo
+                </button>
+                <button onclick="showDebugInfo()" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors">
+                    <i class="fas fa-bug mr-2"></i>
+                    Debug
                 </button>
             </div>
         </div>
@@ -277,8 +289,30 @@
 
         function generateQRCode(tableNumber, url) {
             const canvas = document.getElementById(`qr-${tableNumber}`);
-            if (!canvas) return;
-            
+            if (!canvas) {
+                console.error(`Canvas para mesa ${tableNumber} no encontrado`);
+                showToast(`Error: Canvas para mesa ${tableNumber} no encontrado`, 'error');
+                return;
+            }
+
+            // Mostrar indicador de carga
+            const container = canvas.parentElement;
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 rounded-xl';
+            loadingDiv.innerHTML = '<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-500"></div>';
+            container.style.position = 'relative';
+            container.appendChild(loadingDiv);
+
+            // Verificar que QRCode esté disponible
+            if (typeof QRCode === 'undefined') {
+                console.error('Librería QRCode no está cargada');
+                showToast('Error: Librería QRCode no disponible', 'error');
+                loadingDiv.remove();
+                return;
+            }
+
+            console.log(`Generando QR para mesa ${tableNumber} con URL: ${url}`);
+
             QRCode.toCanvas(canvas, url, {
                 width: 150,
                 margin: 1,
@@ -287,8 +321,22 @@
                     light: '#ffffff'
                 }
             }, function (error) {
+                loadingDiv.remove();
                 if (error) {
-                    console.error('Error generating QR code:', error);
+                    console.error(`Error generando QR para mesa ${tableNumber}:`, error);
+                    showToast(`Error generando QR para mesa ${tableNumber}`, 'error');
+
+                    // Mostrar mensaje de error en el canvas
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#f3f4f6';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#ef4444';
+                    ctx.font = '12px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Error generando QR', canvas.width/2, canvas.height/2 - 10);
+                    ctx.fillText('Ver consola', canvas.width/2, canvas.height/2 + 10);
+                } else {
+                    console.log(`QR generado exitosamente para mesa ${tableNumber}`);
                 }
             });
         }
@@ -414,9 +462,9 @@
                 'bg-blue-500'
             }`;
             toast.textContent = message;
-            
+
             document.body.appendChild(toast);
-            
+
             anime({
                 targets: toast,
                 translateX: [300, 0],
@@ -424,7 +472,7 @@
                 duration: 300,
                 easing: 'easeOutQuart'
             });
-            
+
             setTimeout(() => {
                 anime({
                     targets: toast,
@@ -435,6 +483,50 @@
                     complete: () => toast.remove()
                 });
             }, 3000);
+        }
+
+        function showDebugInfo() {
+            const debugInfo = {
+                'Configuración cargada': !!window.ClickEatConfig,
+                'Base URL': window.ClickEatConfig ? window.ClickEatConfig.baseURL : 'No disponible',
+                'Total mesas': window.ClickEatConfig ? window.ClickEatConfig.totalTables : 'No disponible',
+                'Es local': window.ClickEatConfig ? window.ClickEatConfig.isLocal : 'No disponible',
+                'Hostname': window.location.hostname,
+                'Pathname': window.location.pathname,
+                'Origin': window.location.origin,
+                'QRCode disponible': typeof QRCode !== 'undefined',
+                'Códigos QR guardados': qrCodes.length,
+                'LocalStorage disponible': !!window.localStorage
+            };
+
+            console.table(debugInfo);
+
+            // Mostrar modal con información de debug
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-2xl p-6 max-w-2xl w-full mx-4 max-h-96 overflow-y-auto">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-gray-800">Información de Debug</h3>
+                        <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                        ${Object.entries(debugInfo).map(([key, value]) =>
+                            `<div class="flex justify-between py-1 border-b border-gray-100">
+                                <span class="font-medium text-gray-700">${key}:</span>
+                                <span class="text-gray-600 font-mono">${value}</span>
+                            </div>`
+                        ).join('')}
+                    </div>
+                    <div class="mt-4 text-xs text-gray-500">
+                        <p>Esta información también se muestra en la consola del navegador (F12 → Console)</p>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
         }
     </script>
 </body>

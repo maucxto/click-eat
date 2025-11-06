@@ -13,10 +13,19 @@ const config = {
       // En local, usar rutas relativas
       return window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '') + '/producto-nacional/menu.html';
     } else {
-      // En producción (GitHub Pages), detectar automáticamente el nombre del repo
-      const pathParts = window.location.pathname.split('/').filter(p => p);
-      const repoName = pathParts.length > 0 ? pathParts[0] : 'click-eat';
-      return `${window.location.origin}/${repoName}/producto-nacional/menu.html`;
+      // En producción (GitHub Pages), usar URL absoluta confiable
+      const hostname = window.location.hostname;
+      const pathname = window.location.pathname;
+
+      // Detectar si estamos en un subdirectorio (como GitHub Pages)
+      if (pathname.includes('/click-eat/')) {
+        return `${window.location.origin}/click-eat/producto-nacional/menu.html`;
+      } else if (pathname.includes('/maucxto/')) {
+        return `${window.location.origin}/maucxto/click-eat/producto-nacional/menu.html`;
+      } else {
+        // Fallback: asumir que estamos en el directorio correcto
+        return `${window.location.origin}${pathname.replace(/\/[^\/]*$/, '')}/producto-nacional/menu.html`;
+      }
     }
   },
 
