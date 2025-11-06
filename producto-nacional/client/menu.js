@@ -643,28 +643,10 @@ function closeSuccessModal() {
 function scrollToCategory(category) {
     const element = document.getElementById(`category-${category}`);
     if (element) {
-        // Calcular offset dinámicamente considerando elementos sticky
-        const header = document.querySelector('header');
-        const categoryNav = document.getElementById('category-nav');
-
-        let totalOffset = 20; // Margen base
-
-        if (header) {
-            totalOffset += header.offsetHeight;
-        }
-
-        if (categoryNav) {
-            totalOffset += categoryNav.offsetHeight;
-        }
-
-        // Obtener posición del elemento relativa al viewport
-        const elementRect = element.getBoundingClientRect();
-        const absoluteElementTop = elementRect.top + window.pageYOffset;
-
-        // Hacer scroll con offset calculado dinámicamente
-        window.scrollTo({
-            top: absoluteElementTop - totalOffset,
-            behavior: 'smooth'
+        // Usar scrollIntoView nativo con scroll-margin-top definido en CSS
+        element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
         });
     }
 
