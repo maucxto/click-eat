@@ -981,7 +981,8 @@
         const featuresDotsContainer = document.getElementById('features-dots');
 
         function updateFeaturesCarousel() {
-            const cardWidth = featuresTrack.children[0].offsetWidth + 32; // 32px for px-4 (16px * 2)
+            const card = featuresTrack.children[0];
+            const cardWidth = card.offsetWidth + parseFloat(getComputedStyle(card).marginLeft) + parseFloat(getComputedStyle(card).marginRight);
             const translateX = -featuresCurrentIndex * cardWidth;
             featuresTrack.style.transform = `translateX(${translateX}px)`;
 
