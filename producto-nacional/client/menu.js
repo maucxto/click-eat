@@ -643,15 +643,37 @@ function closeSuccessModal() {
 function scrollToCategory(category) {
     const element = document.getElementById(`category-${category}`);
     if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Calcular offset dinámicamente considerando elementos sticky
+        const header = document.querySelector('header');
+        const categoryNav = document.getElementById('category-nav');
+
+        let totalOffset = 20; // Margen base
+
+        if (header) {
+            totalOffset += header.offsetHeight;
+        }
+
+        if (categoryNav) {
+            totalOffset += categoryNav.offsetHeight;
+        }
+
+        // Obtener posición del elemento relativa al viewport
+        const elementRect = element.getBoundingClientRect();
+        const absoluteElementTop = elementRect.top + window.pageYOffset;
+
+        // Hacer scroll con offset calculado dinámicamente
+        window.scrollTo({
+            top: absoluteElementTop - totalOffset,
+            behavior: 'smooth'
+        });
     }
-    
+
     // Update active category button
     document.querySelectorAll('#category-nav button').forEach(btn => {
         btn.classList.remove('bg-amber-100', 'text-amber-800');
         btn.classList.add('bg-gray-100', 'text-gray-600');
     });
-    
+
     event.target.classList.remove('bg-gray-100', 'text-gray-600');
     event.target.classList.add('bg-amber-100', 'text-amber-800');
 }
